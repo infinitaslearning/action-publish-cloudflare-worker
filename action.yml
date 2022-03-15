@@ -1,12 +1,15 @@
 name: action-publish-cloudflare-worker
-description: action-publish-cloudflare-worker
+description: Action to deploy a bundle to Cloudflare workers via API
 inputs:
-  foo:
-    description: foo
-    required: false
-outputs:
-  bar:
-    description: bar
+  apiToken:
+    description: Cloudflare API token
+    required: true
+  fileName:
+    description: Bundled file name
+    required: true
+  workerName:
+    description: Name of the worker
+    required: true
 runs:
   using: node16
   main: dist/index.js
