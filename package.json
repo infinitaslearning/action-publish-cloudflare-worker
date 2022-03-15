@@ -1,0 +1,19 @@
+{
+  "name": "action-publish-cloudflare-worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build:release": "npx @vercel/ncc build src/index.js -o dist --license licenses.txt",
+    "build:dev": "ncc build src/index.js -o dist --source-map"
+  },
+  "author": "Fernando A. Maule <fer@maule.pro> (https://github.com/fmaule)",
+  "contributors": [
+    "Federico Blancato <> (https://github.com/ksnll)"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0"
+  }
+}
