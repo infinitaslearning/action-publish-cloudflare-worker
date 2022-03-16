@@ -4,11 +4,14 @@ inputs:
   apiToken:
     description: Cloudflare API token
     required: true
-  fileName:
-    description: Bundled file name
+  scriptPath:
+    description: bundled script file path
     required: true
-  workerName:
-    description: Name of the worker
+  wranglerTomlPath:
+    description: wrangler.toml file path
+    required: true
+  environment:
+    description: Cloudflare environment name
     required: true
 runs:
   using: node16

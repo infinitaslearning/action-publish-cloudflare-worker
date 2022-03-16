@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "lint": "eslint .",
     "build:release": "npx @vercel/ncc build src/index.js -o dist --license licenses.txt",
     "build:dev": "ncc build src/index.js -o dist --source-map"
   },
@@ -15,9 +16,11 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
-    "axios": "^0.26.1"
+    "axios": "^0.26.1",
+    "toml": "^3.0.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.33.3"
+    "@vercel/ncc": "^0.33.3",
+    "eslint": "^8.11.0"
   }
 }

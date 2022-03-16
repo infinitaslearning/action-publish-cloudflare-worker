@@ -11,8 +11,9 @@ This GitHub actions uses cloudflare api instead of wrangler, so you can split up
 | name      | required | description                                            |
 |-----------| -------- |--------------------------------------------------------|
  | apiToken  | ✅ | Cloudflare api token with workers privileges |
- | fileName  | ✅ | Name of the bundle script for the worker     |
- | workerName  | ✅ | Name of the Cloudflare worker as it appears on the cloudflare workers dashboard |
+ | scriptPath  | ✅ | Path of the bundle script for the worker     |
+ | wranglerTomlPath  | ✅ | Path of the wrangler.toml config |
+ | environment | ✅ | Environment name as defined on wrangler.toml |
 ---
 
 
@@ -24,11 +25,12 @@ This GitHub actions uses cloudflare api instead of wrangler, so you can split up
 ```yaml
       - uses: actions/checkout@v2
       - name: Publish Cloudflare worker
-        uses: infinitaslearning/publish-cloudflare-worker@v1
+        uses: infinitaslearning/publish-cloudflare-worker@v1.0.0
         with:
-          apiToken: 'CLOUDFLARE_API_TOKEN'
-          fileName: 'path/to/the/bundle.js'
-          workerName: 'name-of-the-worker'
+          apiToken: {{ secrets.CLOUDFLARE_API_TOKEN }}
+          scriptPath: 'path/to/the/bundle.js'
+          wranglerTomlPath: 'path/to/wrangler.toml'
+          environment: 'cf-environment-name
         env:
           CF_ACCOUNT_ID: 'CLOUDFLARE_ACCOUNT_ID'
 ```
