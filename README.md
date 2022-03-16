@@ -11,8 +11,9 @@ This GitHub actions uses cloudflare api instead of wrangler, so you can split up
 | name      | required | description                                            |
 |-----------| -------- |--------------------------------------------------------|
  | apiToken  | ✅ | Cloudflare api token with workers privileges |
- | fileName  | ✅ | Name of the bundle script for the worker     |
- | workerName  | ✅ | Name of the Cloudflare worker as it appears on the cloudflare workers dashboard |
+ | scriptPath  | ✅ | Path of the bundle script for the worker     |
+ | wranglerTomlPath  | ✅ | Path of the wrangler.toml config |
+ | environment | ✅ | Environment name as defined on wrangler.toml |
 ---
 
 

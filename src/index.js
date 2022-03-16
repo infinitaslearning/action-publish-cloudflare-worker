@@ -45,26 +45,29 @@ const main = async () => {
   const { env: tomlEnvs } = tomlData;
   const envConfig = tomlEnvs[environment];
 
-  // TODO: can this be an array in the TOML file?
-  const envVars = Object.entries(envConfig.vars).reduce(
-    (acc, [key, value]) => ({
+  if (!envConfig) {
+    throw new Error(`Cannot find wrangler configuration for environment ${environment}`)
+  }
+
+  const envVars = Object.entries(envConfig.vars || {}).reduce(
+    (acc, [key, value]) => ([
       ...acc,
-      ...{ name: key, text: value, type: 'plain_text' },
-    }),
-    {}
+      { name: key, text: value, type: 'plain_text' },
+    ]),
+    []
   );
 
-  const kvNamespaces = envConfig.kv_namespaces.map((namespace) => ({
+  const kvNamespaces = envConfig.kv_namespaces || [].map((namespace) => ({
     name: namespace.binding,
     namespace_id: namespace.id,
     type: 'kv_namespace',
   }));
 
   const workerName = envConfig.name;
-  const bindings = [...[envVars], ...kvNamespaces];
+  const bindings = [...envVars, ...kvNamespaces];
 
-  core.debug(`Configuring ${[envVars].length} environment variables`);
-  core.debug([envVars].filter((env) => env.type === 'plain_text'));
+  core.debug(`Configuring ${envVars.length} environment variables`);
+  core.debug(envVars.filter(env => env.type === 'plain_text'));
 
   core.debug(`Configuring ${kvNamespaces.length} KV namespaces`);
   core.debug(kvNamespaces);
@@ -92,4 +95,5 @@ main().catch((err) => {
     core.error(err.response.data.errors);
   }
   core.setFailed(err.message);
+  console.error(err)
 });
