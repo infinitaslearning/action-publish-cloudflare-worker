@@ -32,10 +32,11 @@ const main = async () => {
   const apiToken = core.getInput('apiToken')
   const scriptPath = core.getInput('scriptPath')
   const wranglerTomlPath = core.getInput('wranglerTomlPath')
-  const environment = core.getInput('environment')
+  const tomlEnvironment = core.getInput('tomlEnvironment')
+  const cloudflareEnvironment = core.getInput('cloudflareEnvironment')
   const cfAccountId = process.env['CF_ACCOUNT_ID']
 
-  if (!apiToken || !scriptPath || !wranglerTomlPath || !environment || !cfAccountId) {
+  if (!apiToken || !scriptPath || !wranglerTomlPath || !tomlEnvironment || !cfAccountId || !cloudflareEnvironment) {
     throw new Error('Missing parameter');
   }
 
@@ -43,10 +44,10 @@ const main = async () => {
   const tomlData = toml.parse(tomlFile);
 
   const { env: tomlEnvs } = tomlData;
-  const envConfig = tomlEnvs[environment];
+  const envConfig = tomlEnvs[tomlEnvironment];
 
   if (!envConfig) {
-    throw new Error(`Cannot find wrangler configuration for environment ${environment}`)
+    throw new Error(`Cannot find wrangler configuration for environment ${tomlEnvironment}`)
   }
 
   const envVars = Object.entries(envConfig.vars || {}).reduce(
@@ -73,7 +74,7 @@ const main = async () => {
   core.debug(kvNamespaces);
 
   const script = await fs.readFile(scriptPath);
-  const url = `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/workers/services/${workerName}/environments/${environment}`;
+  const url = `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/workers/services/${workerName}/environments/${cloudflareEnvironment}`;
 
   const [boundaryName, formData] = getMultipartForm(script, bindings);
   const headers = {

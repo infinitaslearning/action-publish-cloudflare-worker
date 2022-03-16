@@ -10,7 +10,10 @@ inputs:
   wranglerTomlPath:
     description: wrangler.toml file path
     required: true
-  environment:
+  tomlEnvironment:
+    description: Toml environment name
+    required: true
+  cloudflareEnvironment:
     description: Cloudflare environment name
     required: true
 runs:

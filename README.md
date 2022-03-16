@@ -8,12 +8,13 @@ This GitHub actions uses cloudflare api instead of wrangler, so you can split up
 
 ## 📥 Inputs
 
-| name      | required | description                                            |
-|-----------| -------- |--------------------------------------------------------|
- | apiToken  | ✅ | Cloudflare api token with workers privileges |
- | scriptPath  | ✅ | Path of the bundle script for the worker     |
- | wranglerTomlPath  | ✅ | Path of the wrangler.toml config |
- | environment | ✅ | Environment name as defined on wrangler.toml |
+| name      | required | description                                      |
+|-----------| -------- |--------------------------------------------------|
+ | apiToken  | ✅ | Cloudflare api token with workers privileges     |
+ | scriptPath  | ✅ | Path of the bundle script for the worker         |
+ | wranglerTomlPath  | ✅ | Path of the wrangler.toml config                 |
+ | tomlEnvironment | ✅ | Environment name as defined on wrangler.toml     |
+ | cloudflareEnvironment | ✅ | Environment name as defined on cloudflare worker |
 ---
 
 
