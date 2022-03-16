@@ -27,7 +27,7 @@ This GitHub actions uses cloudflare api instead of wrangler, so you can split up
       - name: Publish Cloudflare worker
         uses: infinitaslearning/publish-cloudflare-worker@v1.0.0
         with:
-          apiToken: {{ secret.CLOUDFLARE_API_TOKEN }}
+          apiToken: {{ secrets.CLOUDFLARE_API_TOKEN }}
           scriptPath: 'path/to/the/bundle.js'
           wranglerTomlPath: 'path/to/wrangler.toml'
           environment: 'cf-environment-name
