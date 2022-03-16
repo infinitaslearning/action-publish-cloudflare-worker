@@ -58,12 +58,12 @@ const main = async () => {
     []
   );
 
-  const kvNamespaces = envConfig.kv_namespaces || [].map((namespace) => ({
+  const kvNamespaces = (envConfig.kv_namespaces || []).map((namespace) => ({
     name: namespace.binding,
     namespace_id: namespace.id,
     type: 'kv_namespace',
   }));
-
+  
   const workerName = envConfig.name;
   const bindings = [...envVars, ...kvNamespaces];
 
