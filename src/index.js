@@ -29,60 +29,67 @@ const getMultipartForm = (script, bindings) => {
 };
 
 const main = async () => {
-  const apiToken = core.getInput('apiToken');
-  const fileName = core.getInput('fileName');
-  const workerName = core.getInput('workerName');
-  const cfAccountId = process.env['CF_ACCOUNT_ID'];
+  const apiToken = core.getInput('apiToken')
+  const scriptPath = core.getInput('scriptPath')
+  const wranglerTomlPath = core.getInput('wranglerTomlPath')
+  const environment = core.getInput('environment')
+  const cfAccountId = process.env['CF_ACCOUNT_ID']
 
-  // if (!apiToken || !fileName || !workerName || !cfAccountId) {
-  //   throw new Error('Missing parameter');
-  // }
+  if (!apiToken || !scriptPath || !wranglerTomlPath || !environment || !cfAccountId) {
+    throw new Error('Missing parameter');
+  }
 
-  const tomlFile = await fs.readFile('foo.toml');
-  const tomlData = toml.parse(tomlFile)
+  const tomlFile = await fs.readFile(wranglerTomlPath);
+  const tomlData = toml.parse(tomlFile);
 
-  const envVars = Object.entries(tomlData.env.tst.vars)
-    .reduce((acc, [key, value]) => ({...acc, ...{ name: key, text: value, type: 'plain_text'}}), {})
-  const kvNamespaces = tomlData.env.tst.kv_namespaces.map(namespace => ({ name: namespace.binding, namespace_id: namespace.id, type: 'kv_namespace' }))
-  const workerNameFromToml = tomlData.env.tst.name
+  const { env: tomlEnvs } = tomlData;
+  const envConfig = tomlEnvs[environment];
 
-  console.log(envVars)
-  console.log(kvNamespaces)
-  console.log(workerNameFromToml)
+  // TODO: can this be an array in the TOML file?
+  const envVars = Object.entries(envConfig.vars).reduce(
+    (acc, [key, value]) => ({
+      ...acc,
+      ...{ name: key, text: value, type: 'plain_text' },
+    }),
+    {}
+  );
 
-  // const script = await fs.readFile(fileName);
-  // const bindings = [
-  //   { name: 'SECRET', text: 'SECRET_VALUE', type: 'plain_text' },
-  //   {
-  //     name: 'KVDump',
-  //     type: 'kv_namespace',
-  //     namespace_id: '3b6f4daa5f174d9aa1fd3f0df5203a3b',
-  //   },
-  // ];
+  const kvNamespaces = envConfig.kv_namespaces.map((namespace) => ({
+    name: namespace.binding,
+    namespace_id: namespace.id,
+    type: 'kv_namespace',
+  }));
 
-  // const cfEnvironment = 'production';
-  // const url = `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/workers/services/${workerName}/environments/${cfEnvironment}`;
+  const workerName = envConfig.name;
+  const bindings = [...[envVars], ...kvNamespaces];
 
-  // const [boundaryName, formData] = getMultipartForm(script, bindings);
-  // const headers = {
-  //   Authorization: `Bearer ${apiToken}`,
-  //   'Content-Type': `multipart/form-data; boundary=----${boundaryName}`,
-  // };
+  core.debug(`Configuring ${[envVars].length} environment variables`);
+  core.debug([envVars].filter((env) => env.type === 'plain_text'));
 
-  // const { data } = await request.put(url, formData, {
-  //   headers,
-  // });
+  core.debug(`Configuring ${kvNamespaces.length} KV namespaces`);
+  core.debug(kvNamespaces);
 
-  // // const { data } = await request.put(url, file, { headers });
-  // core.info(
-  //   `Cloudflare bundle uploaded to worker ${data.result.id} with etag ${data.result.etag} and usage model ${data.result.usage_model}`
-  // );
+  const script = await fs.readFile(scriptPath);
+  const url = `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/workers/services/${workerName}/environments/${environment}`;
+
+  const [boundaryName, formData] = getMultipartForm(script, bindings);
+  const headers = {
+    Authorization: `Bearer ${apiToken}`,
+    'Content-Type': `multipart/form-data; boundary=----${boundaryName}`,
+  };
+
+  const { data } = await request.put(url, formData, {
+    headers,
+  });
+
+  core.info(
+    `Cloudflare bundle uploaded to worker: ${data.result.id} [etag ${data.result.etag}, usage model ${data.result.usage_model}]`
+  );
 };
 
 main().catch((err) => {
   if (err.response?.data) {
     core.error(err.response.data.errors);
   }
-  console.error(err);
   core.setFailed(err.message);
 });
